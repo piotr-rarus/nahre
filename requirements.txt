@@ -1,0 +1,8 @@
+numpy
+scipy
+pandas
+scikit-image
+joblib
+pytest
+lazy_property
+tqdm
