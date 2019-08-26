@@ -1,6 +1,6 @@
 from collections import OrderedDict
 from datetime import datetime
-from os import path
+from pathlib import Path
 from typing import Dict, List
 
 from lazy import lazy
@@ -13,45 +13,32 @@ class Batch():
     """
     Container for batch configuration.
 
-    Returns
-    -------
-    BatchConfig
-        New instance of BatchConfig.
+    Parameters
+    ----------
+    data : DataSet
+        Wrapper for your data. Should implement following lazy property:
+    processors : List[Processor]
+        Against these scripts, records from data set will be ran.
+        Should implement `Processor` interface.
+    logs_dir : str
+        Indicates where intermediary results i.e. figures, telemetry
+        will be dumped.
     """
 
     def __init__(
         self,
         data: base.DataSet,
         processors: List[Processor],
-        logs_dir: str = './logs/'
+        logs_dir: Path = Path('logs')
     ):
-        """
-        Creates new instance of BatchConfig
-
-        Parameters
-        ----------
-        data : DataSet
-            Wrapper for your data. Should implement following lazy property:
-            ```
-            def records(self) -> List[Record]
-            ```
-        processors : List[Processor]
-            Against these scripts, records from data set will be ran.
-            Should implement `Processor` interface.
-        logs_dir : str
-            There intermediary results, figures, telemetry etc. will be dumped.
-        """
 
         self.data = data
         self.processors = processors
 
         now = datetime.now()
 
-        self.LOGS_DIR = path.join(
-            logs_dir,
-            data.name,
-            str(now.timestamp())
-        )
+        self.LOGS_DIR = logs_dir.joinpath(data.name)
+        self.LOGS_DIR = self.LOGS_DIR.joinpath(str(now.timestamp()))
 
     @lazy
     def as_dict(self) -> Dict:

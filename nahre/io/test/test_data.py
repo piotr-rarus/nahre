@@ -1,6 +1,8 @@
-import numpy as np
-from ..nested import DataSet
 from pathlib import Path
+
+import numpy as np
+
+from ..nested import DataSet
 
 
 def test_flat(data_flat_dir: Path):

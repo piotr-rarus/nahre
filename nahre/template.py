@@ -1,6 +1,7 @@
 import json
 import os
-from typing import Dict, List
+from pathlib import Path
+from typing import Dict, Iterable, List
 
 import pandas as pd
 from austen import Logger
@@ -11,7 +12,7 @@ from .io import Record
 from .processor import Processor
 
 
-def execute(batches: List[Batch]):
+def execute(batches: Iterable[Batch]):
     """
     Runs given batches.
 
@@ -29,7 +30,7 @@ def execute(batches: List[Batch]):
         tqdm.write('\n' * 3)
 
         tqdm.write('Working on:')
-        tqdm.write(json.dumps(batch.pprint, indent=4))
+        tqdm.write(json.dumps(batch.as_dict, indent=4))
 
         __execute(batch)
 
@@ -59,11 +60,8 @@ def __execute(batch: Batch):
 
             predicted[record.FILENAME] = {}
 
-            logs_dir = os.path.join(
-                batch_logger.OUTPUT,
-                record.SUBDIR,
-                record.FILENAME
-            )
+            logs_dir = batch_logger.OUTPUT.joinpath(record.SUBDIR)
+            logs_dir = logs_dir.OUTPUT.joinpath(record.FILENAME)
 
             results, predicted[record.FILENAME] = __process(
                 record,
@@ -84,7 +82,7 @@ def __execute(batch: Batch):
         )
 
 
-def __process(record: Record, processors: List[Processor], logs_dir: str):
+def __process(record: Record, processors: List[Processor], logs_dir: Path):
     with Logger(logs_dir) as logger:
 
         src = record.load()

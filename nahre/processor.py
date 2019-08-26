@@ -10,12 +10,6 @@ class Processor(ABC):
     Please inherit this class, when you're implementing research methods.
     This is the only way to force processing interface.
 
-    Parameters
-    ----------
-    ABC : class
-        Module from Python's standard lib,
-        used to implement abstract classes.
-
     """
 
     def __init__(self, logger: Logger):
@@ -65,7 +59,7 @@ class Processor(ABC):
         pass
 
     @staticmethod
-    def pprint() -> Dict:
+    def as_dict() -> Dict:
         return {
             'name': Processor.name(),
             'description': Processor.description()

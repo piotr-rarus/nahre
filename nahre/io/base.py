@@ -44,5 +44,5 @@ class DataSet(ABC):
     def as_dict(self) -> Dict:
         return {
             'name': self.name,
-            'path': self.PATH
+            'path': str(self.PATH)
         }
