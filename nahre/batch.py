@@ -3,9 +3,9 @@ from datetime import datetime
 from os import path
 from typing import Dict, List
 
-from lazy_property import LazyProperty
+from lazy import lazy
 
-from .io import Validator, base
+from .io import base
 from .processor import Processor
 
 
@@ -23,7 +23,6 @@ class Batch():
         self,
         data: base.DataSet,
         processors: List[Processor],
-        validator: Validator = None,
         logs_dir: str = './logs/'
     ):
         """
@@ -39,15 +38,12 @@ class Batch():
         processors : List[Processor]
             Against these scripts, records from data set will be ran.
             Should implement `Processor` interface.
-        validation_set_model : ValidationSet
-            Wrapper for your validation data.
         logs_dir : str
             There intermediary results, figures, telemetry etc. will be dumped.
         """
 
         self.data = data
         self.processors = processors
-        self.validator = validator
 
         now = datetime.now()
 
@@ -57,8 +53,8 @@ class Batch():
             str(now.timestamp())
         )
 
-    @LazyProperty
-    def pprint(self) -> Dict:
+    @lazy
+    def as_dict(self) -> Dict:
         """
         Pipeline's config summary.
 
@@ -70,10 +66,7 @@ class Batch():
 
         config = OrderedDict()
 
-        config['data'] = self.data.pprint
+        config['data'] = self.data.as_dict
         config['processors'] = [proc.name() for proc in self.processors]
-
-        if self.validator:
-            config['validator'] = self.validator.pprint
 
         return config

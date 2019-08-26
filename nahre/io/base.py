@@ -1,61 +1,47 @@
 from abc import ABC, abstractproperty
-from typing import Dict, List
-import os
+from pathlib import Path
+from typing import Dict, Tuple
 
-from lazy_property import LazyProperty
+from lazy import lazy
 
 from .record import Record
 
 
 class DataSet(ABC):
     """
-    Abstract container for data set.
+    Initiates data set. Provides access to images in depicted dir.
 
     Parameters
     ----------
-    ABC : class
-        Module from Python's standard lib,
-        used to implement abstract classes.
+    path : str
+        Path to the data set folder.
+        Images should be put in flat structure.
 
     """
 
-    def __init__(self, path: str):
-        """
-        Initiates data set. User will be able
+    def __init__(self, path: Path):
 
-        Parameters
-        ----------
-        path : str
-            Path to the data set folder.
-            Images should be put in flat structure.
-
-        """
         super().__init__()
         self.PATH = path
 
-    @LazyProperty
+    @lazy
     def name(self):
         """
-        Basename of folder, that holds images data.
-
-        Returns
-        -------
-        string
-            Basename of folder, that holds images data.
+        Basename of folder, that holds data.
         """
 
-        return os.path.basename(self.PATH)
+        return self.PATH.name
 
     @abstractproperty
-    def records(self) -> List[Record]:
+    def records(self) -> Tuple[Record]:
         """
         This prop should return array of records.
         """
 
         pass
 
-    @LazyProperty
-    def pprint(self) -> Dict:
+    @lazy
+    def as_dict(self) -> Dict:
         return {
             'name': self.name,
             'path': self.PATH

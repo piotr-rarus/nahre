@@ -2,7 +2,11 @@ numpy
 scipy
 pandas
 scikit-image
-joblib
+austen
+degas
+lazy
 pytest
-lazy_property
+pytest-cov
+flake8
+pylint
 tqdm

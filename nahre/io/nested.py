@@ -1,7 +1,8 @@
 import os
-from typing import List
+from pathlib import Path
+from typing import Tuple
 
-from lazy_property import LazyProperty
+from lazy import lazy
 
 from . import base
 from .record import Record
@@ -9,35 +10,27 @@ from .record import Record
 
 class DataSet(base.DataSet):
     """
-    Loads images as records from flat folder.
+    Initiates data set. Every image under base dir will be loaded.
 
-    Returns
-    -------
-    DataSetPlain
-        New instance of DataSetPlain.
+    Parameters
+    ----------
+    path : str
+        Path to the data set folder.
+        Images should be put in flat structure.
+
     """
 
-    def __init__(self, path):
-        """
-        Initiates data set.
-
-        Parameters
-        ----------
-        path : str
-            Path to the data set folder.
-            Images should be put in flat structure.
-
-        """
+    def __init__(self, path: Path):
         super().__init__(path)
 
-    @LazyProperty
-    def records(self) -> List[Record]:
+    @lazy
+    def records(self) -> Tuple[Record]:
         records = []
 
-        for dir, subdirs, files in os.walk(self.PATH):
+        for dir, subdirs, files in os.walk(str(self.PATH)):
             for file in files:
-                reldir = os.path.relpath(dir, self.PATH)
-                record = Record(file, reldir, self.PATH)
+                reldir = os.path.relpath(dir, str(self.PATH))
+                record = Record(file, reldir, str(self.PATH))
                 records.append(record)
 
-        return records
+        return tuple(records)

@@ -50,11 +50,10 @@ def __execute(batch: Batch):
     """
 
     predicted = {}
-    validator = batch.validator
 
     with Logger(batch.LOGS_DIR) as batch_logger:
 
-        batch_logger.add_entry('batch', batch.pprint)
+        batch_logger.add_entry('batch', batch.as_dict)
 
         for record in tqdm(batch.data.records, desc='Records'):
 
@@ -83,13 +82,6 @@ def __execute(batch: Batch):
             'predicted',
             prefix_step=False
         )
-
-        if validator:
-            validation = validator.validate(predicted)
-            stats = validator.aggregate(validation)
-
-            batch_logger.save_csv(validation, 'validation', prefix_step=False)
-            batch_logger.save_csv(stats, 'validation_stats', prefix_step=False)
 
 
 def __process(record: Record, processors: List[Processor], logs_dir: str):
