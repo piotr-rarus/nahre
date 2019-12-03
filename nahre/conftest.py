@@ -1,7 +1,6 @@
 from pathlib import Path
 from shutil import rmtree
 
-from austen import Logger
 from pytest import fixture
 
 from nahre.io import Data

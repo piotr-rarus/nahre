@@ -1,98 +1,90 @@
 # Nahre
 
-Computer vision research and prototype package.
+Vanilla computer vision research and prototype package.
 Lets you dive straight into problem solving mindset.
 You don't have to worry about tedious stuff.
 
-- load your data set
-- configure batch
-- process records
-- validate them
+- loading data
+- batch configuration
+- record processing
 
 ## Getting started
 
-Be sure you have `virtualenv` installed on your machine.
-
-```shell
-pip install virtualenv
-```
-
-Clone this repository to your disk. Then install this package through `pip`.
-
-```shell
-cd [directory]
-pip install .
+```sh
+pip install nahre
 ```
 
 ## How to use
 
 ### Data
 
-Put your image files in a single folder. This folder can only comprise of image files.
-
-### Validation
-
-Validation set is a simple csv file. In first column you define filenames that point out each image from data set.
-In additional columns you write down expected results for each of these images.
-Please refer to exemplary validation .csv, which can be found in `./tests/data` folder.
+Put your image files in a single folder. Both flat and nested structures are supported.
 
 ### Processor
 
-Processor class must implement base Processor interface, which ships with this package.
+Processor class must implement base `Processor` interface, which ships with this package.
 When batch is executed, every record from data set is ran against `process` method.
-This method must return results which matches your validation set.
-If you want to omit validation step, just return empty dict.
+This method must return results which matches next processor's interface on the list.
+
+### Example
 
 ```py
-import skimage.feature
+from pathlib import Path
 
+import numpy as np
 from austen import Logger
+from degas import FluentImage
+from lazy import lazy
+from pytest import fixture
+from skimage import color, exposure, feature
 
-import nahre
+from nahre import Batch, Processor, execute
+from nahre.io import Data
 
 
-class EdgeProcessor(nahre.Processor):
+class EdgeProcessor(Processor):
 
     def __init__(self, logger: Logger):
         super().__init__(logger)
 
-    def process(self, src):
-        src = record.load()
-        edges = skimage.feature.canny(src)
-        edges_count = np.count_nonzero(edges)
+    @lazy
+    def _description(self):
+        return 'Any description is better than none.'
 
-        return {
-            'edges: edges
-        },{
-            'edges_count': edges_count
-        }
+    def process(self, src: np.ndarray):
+
+        with FluentImage(src, self.logger, 'preprocessing') as preprocessed:
+
+            preprocessed >> (
+                color.rgb2gray
+            ) >> (
+                exposure.rescale_intensity
+            ) >> (
+                exposure.equalize_adapthist
+            ) >> (
+                feature.canny
+            )
+
+            return {
+                'preprocessed': preprocessed.image
+            }
+
+
+batch = Batch(
+    data=Data(Path('data')),
+    processors=[EdgeProcessor],
+    log_root=Path('log')
+)
+
+execute([batch])
 
 ```
 
-### Batch configuration
-
-```py
-
-def batches():
-
-    yield nahre.Batch(
-        data=nahre.io.flat.DataSet(DATA),
-        processors=[EdgeProcessor],
-        validator=nahre.io.Validator(VALIDATION),
-        logs_dir=LOGS
-    )
-
-```
-
-### Make yourself comfortable and watch the fireworks
-
-```py
-nahre.execute(batches())
-```
+`nahre` will dump any intermediate images using `austen` package. Additionally, final results will be dumped in separate folder.
 
 ## Tests
 
 ```shell
 cd [project-path]
-python -m pytest .\tests\
+python -m pytest
 ```
