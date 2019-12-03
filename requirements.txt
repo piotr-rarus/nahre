@@ -1,0 +1,9 @@
+numpy
+scikit-image
+austen
+degas
+lazy
+pytest
+pytest-cov
+flake8
+tqdm
