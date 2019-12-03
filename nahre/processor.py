@@ -14,7 +14,7 @@ class Processor(ABC):
 
     def __init__(self, logger: Logger):
         super().__init__()
-        self.logger = logger.get_child(self._name())
+        self.logger = logger.get_child(self._name)
 
     def __enter__(self):
         return self
@@ -24,14 +24,11 @@ class Processor(ABC):
 
     @lazy
     def _name(self) -> str:
-        """
-        Please make some notes, about your research script.
-        """
-
         return self.__class__.__name__
 
+    @lazy
     @abstractmethod
-    def _description() -> str:
+    def _description(self) -> str:
         """
         Please make some notes, about your research script.
         """

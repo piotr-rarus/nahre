@@ -44,7 +44,7 @@ def __execute(batch: Batch):
 
     """
 
-    with Logger(batch.LOGS_DIR) as batch_logger:
+    with Logger(batch.log_dir) as batch_logger:
 
         batch_logger.add_entry('batch', batch.as_dict)
 

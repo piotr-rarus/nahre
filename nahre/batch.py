@@ -6,14 +6,15 @@ from typing import Dict, List
 
 from lazy import lazy
 
-from .io.base import DataSet
+from nahre.io.base import Data
+
 from .processor import Processor
 
 
 @dataclass(frozen=True)
 class Batch():
 
-    data: DataSet
+    data: Data
     processors: List[Processor]
     log_root: Path = Path('log')
 
@@ -43,6 +44,6 @@ class Batch():
         config = {}
 
         config['data'] = self.data.as_dict
-        config['processors'] = [proc._name for proc in self.processors]
+        config['processors'] = [proc.__name__ for proc in self.processors]
 
         return config

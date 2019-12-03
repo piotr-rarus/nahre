@@ -1,2 +1,2 @@
-from .nested import DataSet
+from .nested import Data
 from .record import Record

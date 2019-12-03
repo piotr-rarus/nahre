@@ -1,18 +1,14 @@
 from pathlib import Path
-from typing import Tuple
 
 import numpy as np
-import skimage.exposure
-import skimage.feature
 from austen import Logger
 from degas import FluentImage
+from lazy import lazy
 from pytest import fixture
+from skimage import color, exposure, feature
 
-from nahre.io import DataSet
-
-from ..batch import Batch
-from ..processor import Processor
-from ..template import execute
+from nahre import Batch, Processor, execute
+from nahre.io import Data
 
 
 class EdgeProcessor(Processor):
@@ -20,48 +16,39 @@ class EdgeProcessor(Processor):
     def __init__(self, logger: Logger):
         super().__init__(logger)
 
-    def name():
-        return 'Edges'
-
-    def description():
+    @lazy
+    def _description(self):
         return 'Any description is better than none.'
 
-    def process(self, src):
-        preprocessed = self.__preprocess(src)
-        edges = skimage.feature.canny(preprocessed)
-        edges_count = np.count_nonzero(edges)
+    def process(self, src: np.ndarray):
 
-        return {
-            'edges': edges
-        }, {
-            'edges_count': edges_count
-        }
-
-    def __preprocess(self, src):
         with FluentImage(src, self.logger, 'preprocessing') as preprocessed:
 
             preprocessed >> (
-                skimage.color.rgb2gray
+                color.rgb2gray
             ) >> (
-                skimage.exposure.rescale_intensity
+                exposure.rescale_intensity
             ) >> (
-                skimage.exposure.equalize_adapthist
+                exposure.equalize_adapthist
+            ) >> (
+                feature.canny
             )
 
-            return preprocessed.image
+            return {
+                'preprocessed': preprocessed.image
+            }
 
 
 @fixture
 def batch(
-    data_flat: DataSet,
-    data_nested: DataSet,
-    logs_dir: Path
+    data_flat: Data,
+    log_dir: Path
 ) -> Batch:
 
     return Batch(
         data=data_flat,
         processors=[EdgeProcessor],
-        logs_dir=logs_dir
+        log_root=log_dir
     )
 
 
