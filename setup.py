@@ -9,23 +9,22 @@ setuptools.setup(
     name='nahre',
     version='0.1.0',
     author='Piotr Rarus',
-    author_email='p.rarus@micro-solutions.pl',
-    description='CV research lib.',
+    author_email='piotr.rarus@gmail.com',
+    description='Computer vision research lib.',
     long_description=long_description,
     long_description_content_type='text/markdown',
     url='http://msol-git:3000/ai-tools/nahre',
     packages=setuptools.find_packages(
         exclude=[
-            "tests",
-            "examples"            
+            "tests"
         ]
     ),
     install_requires=[
         'numpy',
-        'pandas',
         'scikit-image',
-        'pytest',
-        'lazy_property',
+        'austen',
+        'degas'
+        'lazy',
         'tqdm',
     ],
 )

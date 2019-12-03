@@ -1,5 +1,6 @@
 import os
 
+import numpy as np
 from skimage.io import imread
 
 
@@ -34,7 +35,7 @@ class Record:
         self.FILENAME, self.FILE_EXT = os.path.splitext(file)
         self.FILEPATH = os.path.join(dir, subdir, file)
 
-    def load(self):
+    def load(self) -> np.ndarray:
         """
         Loads image from disk into memory.
         Uses respective skimage function.

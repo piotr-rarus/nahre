@@ -1,9 +1,7 @@
 import json
-import os
 from pathlib import Path
 from typing import Dict, Iterable, List
 
-import pandas as pd
 from austen import Logger
 from tqdm import tqdm
 
@@ -18,8 +16,7 @@ def execute(batches: Iterable[Batch]):
 
     Parameters
     ----------
-    batches : list[Batch]
-        These batches will be ran.
+    batches : Iterable[Batch]
 
     """
 
@@ -39,18 +36,13 @@ def execute(batches: Iterable[Batch]):
 
 def __execute(batch: Batch):
     """
-    Runs given batch.
-      - processes records
-      - performs validation
+    Runs given batch. Executes processors agains each record.
 
     Parameters
     ----------
     batch : Batch
-        Batch to be ran.
 
     """
-
-    predicted = {}
 
     with Logger(batch.LOGS_DIR) as batch_logger:
 
@@ -58,12 +50,10 @@ def __execute(batch: Batch):
 
         for record in tqdm(batch.data.records, desc='Records'):
 
-            predicted[record.FILENAME] = {}
-
             logs_dir = batch_logger.OUTPUT.joinpath(record.SUBDIR)
-            logs_dir = logs_dir.OUTPUT.joinpath(record.FILENAME)
+            logs_dir = logs_dir.joinpath(record.FILENAME)
 
-            results, predicted[record.FILENAME] = __process(
+            results = __process(
                 record,
                 batch.processors,
                 logs_dir
@@ -75,14 +65,12 @@ def __execute(batch: Batch):
                 batch_logger.get_child('_final')
             )
 
-        batch_logger.save_csv(
-            pd.DataFrame.from_dict(predicted, orient='index'),
-            'predicted',
-            prefix_step=False
-        )
 
-
-def __process(record: Record, processors: List[Processor], logs_dir: Path):
+def __process(
+    record: Record,
+    processors: List[Processor],
+    logs_dir: Path
+):
     with Logger(logs_dir) as logger:
 
         src = record.load()
@@ -91,15 +79,12 @@ def __process(record: Record, processors: List[Processor], logs_dir: Path):
             'src': src
         }
 
-        pred = {}
-
         for processor_class in tqdm(processors, desc='Processors'):
             with processor_class(logger) as processor:
 
-                inter, proc_pred = processor.process(**inter)
-                pred = {**pred, **proc_pred}
+                inter = processor.process(**inter)
 
-        return inter, pred
+        return inter
 
 
 def __log_final(record: Record, results: Dict, logger: Logger):

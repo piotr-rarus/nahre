@@ -1,13 +1,13 @@
 from abc import ABC, abstractproperty
 from pathlib import Path
-from typing import Dict, Tuple
+from typing import Dict, Iterable
 
 from lazy import lazy
 
 from .record import Record
 
 
-class DataSet(ABC):
+class Data(ABC):
     """
     Initiates data set. Provides access to images in depicted dir.
 
@@ -27,17 +27,13 @@ class DataSet(ABC):
     @lazy
     def name(self):
         """
-        Basename of folder, that holds data.
+        Root dir of data folder.
         """
 
         return self.PATH.name
 
     @abstractproperty
-    def records(self) -> Tuple[Record]:
-        """
-        This prop should return array of records.
-        """
-
+    def records(self) -> Iterable[Record]:
         pass
 
     @lazy

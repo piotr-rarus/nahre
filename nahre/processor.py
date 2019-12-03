@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
-from typing import Dict
 
 from austen import Logger
+from lazy import lazy
 
 
 class Processor(ABC):
@@ -14,27 +14,24 @@ class Processor(ABC):
 
     def __init__(self, logger: Logger):
         super().__init__()
-        self.logger = logger.get_child(Processor.name())
+        self.logger = logger.get_child(self._name())
 
     def __enter__(self):
         return self
 
     def __exit__(self, type, value, traceback):
-        self.logger.close()
-
-    @staticmethod
-    @abstractmethod
-    def name() -> str:
-        """
-        The name of your research script. Make it look cool.
-        This name will be used in logs dir.
-        """
-
         pass
 
-    @staticmethod
+    @lazy
+    def _name(self) -> str:
+        """
+        Please make some notes, about your research script.
+        """
+
+        return self.__class__.__name__
+
     @abstractmethod
-    def description() -> str:
+    def _description() -> str:
         """
         Please make some notes, about your research script.
         """
@@ -42,7 +39,7 @@ class Processor(ABC):
         pass
 
     @abstractmethod
-    def process(self, **kwargs):
+    def process(self, **kwargs) -> dict:
         """
         This method will be ran against records from batch.
 
@@ -52,15 +49,15 @@ class Processor(ABC):
 
         Returns
         -------
-        (Dict, Dict)
-            Please follow the structure present in your validation `.csv` file.
+        dict
+
         """
 
         pass
 
-    @staticmethod
-    def as_dict() -> Dict:
+    @lazy
+    def as_dict(self) -> dict:
         return {
-            'name': Processor.name(),
-            'description': Processor.description()
+            'name': self._name,
+            'description': self._description
         }
