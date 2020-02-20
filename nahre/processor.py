@@ -22,21 +22,8 @@ class Processor(ABC):
     def __exit__(self, type, value, traceback):
         pass
 
-    @lazy
-    def _name(self) -> str:
-        return self.__class__.__name__
-
-    @lazy
     @abstractmethod
-    def _description(self) -> str:
-        """
-        Please make some notes, about your research script.
-        """
-
-        pass
-
-    @abstractmethod
-    def process(self, **kwargs) -> dict:
+    def __call__(self, **kwargs) -> dict:
         """
         This method will be ran against records from batch.
 
@@ -48,6 +35,19 @@ class Processor(ABC):
         -------
         dict
 
+        """
+
+        pass
+
+    @lazy
+    def _name(self) -> str:
+        return self.__class__.__name__
+
+    @lazy
+    @abstractmethod
+    def _description(self) -> str:
+        """
+        Please make some notes, about your research script.
         """
 
         pass
