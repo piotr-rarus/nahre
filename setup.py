@@ -7,7 +7,7 @@ with open('README.md', 'r') as fh:
 
 setuptools.setup(
     name='nahre',
-    version='0.1.1',
+    version='0.2.0',
     author='Piotr Rarus',
     author_email='piotr.rarus@gmail.com',
     description='Computer vision research lib.',
