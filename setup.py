@@ -23,7 +23,7 @@ setuptools.setup(
         'numpy',
         'scikit-image',
         'austen',
-        'degas'
+        'degas',
         'lazy',
         'tqdm',
     ],

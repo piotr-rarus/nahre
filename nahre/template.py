@@ -82,7 +82,7 @@ def __process(
         for processor_class in tqdm(processors, desc='Processors'):
             with processor_class(logger) as processor:
 
-                inter = processor.process(**inter)
+                inter = processor(**inter)
 
         return inter
 
