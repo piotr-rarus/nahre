@@ -51,7 +51,7 @@ class EdgeProcessor(Processor):
     def _description(self):
         return 'Any description is better than none.'
 
-    def process(self, src: np.ndarray):
+    def __call__(self, src: np.ndarray):
 
         with FluentImage(src, self.logger, 'preprocessing') as preprocessed:
 
